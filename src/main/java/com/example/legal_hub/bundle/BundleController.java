@@ -1,5 +1,6 @@
 package com.example.legal_hub.bundle;
 
+import com.example.legal_hub.bundle.requests.UploadNewBundle;
 import com.example.legal_hub.common.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +20,9 @@ public class BundleController {
 
     @PostMapping(path = "/upload")
     public ResponseEntity<Response<?>> uploadBundle(
+            @ModelAttribute UploadNewBundle newBundle,
             @RequestPart(name = "file") MultipartFile file
     ) throws IOException {
-        return bundleService.uploadBundle(file);
+        return bundleService.uploadBundle(file, newBundle);
     }
 }
