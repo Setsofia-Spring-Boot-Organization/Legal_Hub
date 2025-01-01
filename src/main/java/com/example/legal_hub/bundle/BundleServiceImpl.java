@@ -2,6 +2,7 @@ package com.example.legal_hub.bundle;
 
 import com.example.legal_hub.bundle.bundle_util.BundleUtil;
 import com.example.legal_hub.bundle.requests.UploadNewBundle;
+import com.example.legal_hub.bundle.responses.BundleData;
 import com.example.legal_hub.common.Response;
 import com.example.legal_hub.exceptions.Error;
 import com.example.legal_hub.exceptions.LegalHubException;
@@ -13,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class BundleServiceImpl implements BundleService{
@@ -54,5 +57,36 @@ public class BundleServiceImpl implements BundleService{
         } catch (Exception e) {
             throw new LegalHubException(Error.ERROR_SAVING_DATA, new Throwable(Message.THE_DATA_CANNOT_BE_SAVED_PLEASE_TRY_AGAIN.label));
         }
+    }
+
+
+
+    @Override
+    public ResponseEntity<Response<?>> getAllBundles() {
+
+        List<BundleData> bundles = new ArrayList<>();
+
+        //get the bundle
+        bundleRepository.findAll().forEach(bundle -> {
+            bundles.add(
+                    new BundleData(
+                            bundle.getId(),
+                            bundle.getCreatedAt(),
+                            bundle.getUpdatedAt(),
+                            bundle.getAuthor(),
+                            bundle.getTitle(),
+                            bundle.getDescription(),
+                            bundle.getCategory(),
+                            "/legal_hub/api/v1/bundles/viewBundle/" + bundle.getBundle() // Add file download URL
+                    )
+            );
+        });
+
+        Response<?> response = new Response.Builder<>()
+                .status(HttpStatus.OK.value())
+                .message("bundles")
+                .data(bundles)
+                .build();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
