@@ -2,28 +2,37 @@ package com.example.legal_hub.bundle.bundle_util;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.client.gridfs.GridFSBucket;
+import com.mongodb.client.gridfs.GridFSDownloadStream;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import org.bson.types.ObjectId;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 
 @Component
 public class BundleUtil {
 
     private final GridFsTemplate fsTemplate;
-    private final GridFsOperations fsOperations;
+    private final GridFSBucket fsBucket;
 
-    public BundleUtil(GridFsTemplate fsTemplate, GridFsOperations fsOperations) {
+    public BundleUtil(GridFsTemplate fsTemplate, GridFSBucket fsBucket) {
         this.fsTemplate = fsTemplate;
-        this.fsOperations = fsOperations;
+        this.fsBucket = fsBucket;
     }
 
     /**
@@ -63,15 +72,43 @@ public class BundleUtil {
      *
      * @param id The ID of the file in GridFS.
      * @return An InputStreamResource representing the file content.
-     * @throws IOException if an I/O error occurs while retrieving the file.
      */
-    public InputStreamResource downloadBundle(String id) throws IOException {
-        GridFSFile fsFile = fsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
+    public ResponseEntity<?> downloadBundle(String id) {
+        try {
+            // Validate and convert the string ID to ObjectId
+            ObjectId objectId;
+            try {
+                objectId = new ObjectId(id);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file ID format");
+            }
 
-        if (fsFile == null) {
-            throw new IllegalArgumentException("File not found with ID: " + id);
+            // Retrieve the file from GridFS
+            GridFSFile gridFsFile = fsTemplate.findOne(new Query(Criteria.where("_id").is(objectId)));
+
+            if (gridFsFile == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found");
+            }
+
+            // Open the download stream and ensure the InputStream remains open during the response
+            GridFSDownloadStream downloadStream = fsBucket.openDownloadStream(gridFsFile.getObjectId());
+            InputStream inputStream = new BufferedInputStream(downloadStream);
+
+            // Handle filename encoding for special characters
+            String encodedFilename = encodeFilename(gridFsFile.getFilename());
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF) // Set content type to PDF for browser to render it
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + encodedFilename + "\"") // Inline display (not download)
+                    .body(new InputStreamResource(inputStream));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while processing the file ID: " + e.getMessage());
         }
+    }
 
-        return new InputStreamResource(fsOperations.getResource(fsFile).getInputStream());
+    // Method to handle filename encoding
+    private String encodeFilename(String filename) {
+        return URLEncoder.encode(filename, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
     }
 }
