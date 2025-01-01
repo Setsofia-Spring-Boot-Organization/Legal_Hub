@@ -17,4 +17,12 @@ public interface BundleService {
      * @throws IOException if an error occurs while processing the file
      */
     ResponseEntity<Response<?>> uploadBundle(MultipartFile file, UploadNewBundle newBundle) throws IOException;
+
+
+    /**
+     * This method retrieves all available bundles.
+     *
+     * @return a {@link ResponseEntity} containing a {@link Response} with the list of all bundles
+     */
+    ResponseEntity<Response<?>> getAllBundles();
 }
