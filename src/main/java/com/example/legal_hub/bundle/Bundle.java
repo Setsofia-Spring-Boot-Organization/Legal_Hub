@@ -23,7 +23,9 @@ public class Bundle {
     private String description;
     private String category;
 
-    public Bundle(LocalDateTime createdAt, LocalDateTime updatedAt, String author, String title, String description, String category) {
+    private String bundle;
+
+    public Bundle(LocalDateTime createdAt, LocalDateTime updatedAt, String author, String title, String description, String category, String bundle) {
         this.id = UUID.randomUUID().toString();
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -31,6 +33,7 @@ public class Bundle {
         this.title = title;
         this.description = description;
         this.category = category;
+        this.bundle = bundle;
     }
 
     public String getId() {
@@ -89,17 +92,25 @@ public class Bundle {
         this.category = category;
     }
 
+    public String getBundle() {
+        return bundle;
+    }
+
+    public void setBundle(String bundle) {
+        this.bundle = bundle;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Bundle bundle = (Bundle) o;
-        return Objects.equals(id, bundle.id) && Objects.equals(createdAt, bundle.createdAt) && Objects.equals(updatedAt, bundle.updatedAt) && Objects.equals(author, bundle.author) && Objects.equals(title, bundle.title) && Objects.equals(description, bundle.description) && Objects.equals(category, bundle.category);
+        Bundle bundle1 = (Bundle) o;
+        return Objects.equals(id, bundle1.id) && Objects.equals(createdAt, bundle1.createdAt) && Objects.equals(updatedAt, bundle1.updatedAt) && Objects.equals(author, bundle1.author) && Objects.equals(title, bundle1.title) && Objects.equals(description, bundle1.description) && Objects.equals(category, bundle1.category) && Objects.equals(bundle, bundle1.bundle);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, createdAt, updatedAt, author, title, description, category);
+        return Objects.hash(id, createdAt, updatedAt, author, title, description, category, bundle);
     }
 
     @Override
@@ -112,6 +123,7 @@ public class Bundle {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", category='" + category + '\'' +
+                ", bundle='" + bundle + '\'' +
                 '}';
     }
 }
