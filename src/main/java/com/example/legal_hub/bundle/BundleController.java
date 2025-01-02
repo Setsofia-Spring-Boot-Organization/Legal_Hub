@@ -53,7 +53,7 @@ public class BundleController {
     public ResponseEntity<Response<?>> updateBundle(
             @PathVariable String bundleId,
             @RequestPart(name = "file") MultipartFile file,
-            @RequestBody UploadNewBundle bundle
+            @ModelAttribute UploadNewBundle bundle
     ) {
         return bundleService.updateBundle(bundleId, bundle, file);
     }
