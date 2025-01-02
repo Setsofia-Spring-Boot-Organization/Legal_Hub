@@ -126,12 +126,12 @@ public class BundleServiceImpl implements BundleService{
         bundleRepository.findById(bundleId).ifPresent(
                 bundle -> {
                     bundle.setUpdatedAt(LocalDateTime.now());
-                    bundle.setAuthor(updateBundle.author() == null? bundle.getAuthor(): updateBundle.author());
-                    bundle.setTitle(updateBundle.title() == null? bundle.getTitle(): updateBundle.title());
-                    bundle.setCategory(updateBundle.category() == null? bundle.getCategory(): updateBundle.category());
-                    bundle.setDescription(updateBundle.description() == null? bundle.getDescription(): updateBundle.description());
+                    bundle.setAuthor(updateBundle.author() == null || updateBundle.author().isEmpty()? bundle.getAuthor(): updateBundle.author());
+                    bundle.setTitle(updateBundle.title() == null || updateBundle.title().isEmpty()? bundle.getTitle(): updateBundle.title());
+                    bundle.setCategory(updateBundle.category() == null || updateBundle.category().isEmpty()? bundle.getCategory(): updateBundle.category());
+                    bundle.setDescription(updateBundle.description() == null || updateBundle.description().isEmpty()? bundle.getDescription(): updateBundle.description());
                     try {
-                        bundle.setBundle(file == null? bundle.getBundle(): bundleUtil.uploadBundle(file));
+                        bundle.setBundle(file == null || file.isEmpty()? bundle.getBundle(): bundleUtil.uploadBundle(file));
                     } catch (IOException e) {
                         throw new LegalHubException(Error.ERROR_UPDATING_DATA, new Throwable(Message.UPDATE_FAILED_TRY_AGAIN_LATER.label));
                     }
