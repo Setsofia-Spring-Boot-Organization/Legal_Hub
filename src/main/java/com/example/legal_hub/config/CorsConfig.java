@@ -14,7 +14,7 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("api/v1/**")
+        registry.addMapping("legal_hub/api/v1/**")
                 .allowedOrigins(DEPLOYED_FRONT_END_URL, LOCAL_FRONT_END_URL)
                 .allowedMethods("GET", "POST", "DELETE", "PATCH", "UPDATE", "OPTIONS");
     }
