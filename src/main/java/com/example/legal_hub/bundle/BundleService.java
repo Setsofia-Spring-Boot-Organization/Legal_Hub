@@ -35,4 +35,15 @@ public interface BundleService {
      *         of the bundle if found, or an appropriate error message if the bundle does not exist.
      */
     ResponseEntity<Response<?>> getBundle(String bundleId);
+
+
+    /**
+     * This method updates the details of an existing bundle identified by its unique identifier.
+     *
+     * @param bundleId the unique identifier of the bundle to update
+     * @return a ResponseEntity containing a Response object. The Response object holds the updated
+     *         bundle details if the update is successful, or an appropriate error message if the
+     *         bundle does not exist or the update fails.
+     */
+    ResponseEntity<Response<?>> updateBundle(String bundleId, UploadNewBundle bundle, MultipartFile file);
 }
