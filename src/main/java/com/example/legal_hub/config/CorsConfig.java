@@ -13,9 +13,9 @@ import java.util.List;
 
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
-    @Value("${deployed-backend-url}")
+    @Value("${deployed-frontend-url}")
     private String DEPLOYED_FRONT_END_URL;
-    @Value("${local-backend-url}")
+    @Value("${local-frontend-url}")
     private String LOCAL_FRONT_END_URL;
 
     @Bean
