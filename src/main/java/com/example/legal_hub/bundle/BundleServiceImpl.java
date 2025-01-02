@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class BundleServiceImpl implements BundleService{
@@ -27,6 +28,36 @@ public class BundleServiceImpl implements BundleService{
         this.bundleUtil = bundleUtil;
         this.bundleRepository = bundleRepository;
     }
+
+
+
+    @Override
+    public ResponseEntity<Response<?>> getBundle(String bundleId) {
+
+        AtomicReference<BundleData> dataAtomicReference = new AtomicReference<>();
+
+        bundleRepository.findById(bundleId).ifPresent(bundle -> dataAtomicReference.set(
+                new BundleData(
+                        bundle.getId(),
+                        bundle.getCreatedAt(),
+                        bundle.getUpdatedAt(),
+                        bundle.getAuthor(),
+                        bundle.getTitle(),
+                        bundle.getDescription(),
+                        bundle.getCategory(),
+                        "/legal_hub/api/v1/bundles/viewBundle/" + bundle.getBundle() // Add file download URL
+                )
+        ));
+
+        Response<?> response = new Response.Builder<>()
+                .status(HttpStatus.OK.value())
+                .message("bundles")
+                .data(dataAtomicReference)
+                .build();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+
 
     @Override
     public ResponseEntity<Response<?>> uploadBundle(MultipartFile file, UploadNewBundle newBundle) throws IOException {
@@ -67,20 +98,18 @@ public class BundleServiceImpl implements BundleService{
         List<BundleData> bundles = new ArrayList<>();
 
         //get the bundle
-        bundleRepository.findAll().forEach(bundle -> {
-            bundles.add(
-                    new BundleData(
-                            bundle.getId(),
-                            bundle.getCreatedAt(),
-                            bundle.getUpdatedAt(),
-                            bundle.getAuthor(),
-                            bundle.getTitle(),
-                            bundle.getDescription(),
-                            bundle.getCategory(),
-                            "/legal_hub/api/v1/bundles/viewBundle/" + bundle.getBundle() // Add file download URL
-                    )
-            );
-        });
+        bundleRepository.findAll().forEach(bundle -> bundles.add(
+                new BundleData(
+                        bundle.getId(),
+                        bundle.getCreatedAt(),
+                        bundle.getUpdatedAt(),
+                        bundle.getAuthor(),
+                        bundle.getTitle(),
+                        bundle.getDescription(),
+                        bundle.getCategory(),
+                        "/legal_hub/api/v1/bundles/viewBundle/" + bundle.getBundle() // Add file download URL
+                )
+        ));
 
         Response<?> response = new Response.Builder<>()
                 .status(HttpStatus.OK.value())
