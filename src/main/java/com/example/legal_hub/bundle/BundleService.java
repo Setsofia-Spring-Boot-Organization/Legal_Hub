@@ -25,4 +25,14 @@ public interface BundleService {
      * @return a {@link ResponseEntity} containing a {@link Response} with the list of all bundles
      */
     ResponseEntity<Response<?>> getAllBundles();
+
+
+    /**
+     * This method retrieves a bundle by its unique identifier.
+     *
+     * @param bundleId the unique identifier of the bundle to retrieve
+     * @return a ResponseEntity containing a Response object. The Response object holds the details
+     *         of the bundle if found, or an appropriate error message if the bundle does not exist.
+     */
+    ResponseEntity<Response<?>> getBundle(String bundleId);
 }
