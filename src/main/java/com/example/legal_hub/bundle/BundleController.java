@@ -22,7 +22,6 @@ public class BundleController {
     }
 
 
-
     @PostMapping(path = "/upload")
     public ResponseEntity<Response<?>> uploadBundle(
             @ModelAttribute UploadNewBundle newBundle,
@@ -30,7 +29,6 @@ public class BundleController {
     ) throws IOException {
         return bundleService.uploadBundle(file, newBundle);
     }
-
 
 
     @GetMapping()
@@ -48,5 +46,15 @@ public class BundleController {
     @GetMapping("/viewBundle/{bundleId}")
     public ResponseEntity<?> downloadBundle(@PathVariable String bundleId) {
         return bundleUtil.downloadBundle(bundleId);
+    }
+
+
+    @PutMapping(path = "/update/{bundleId}")
+    public ResponseEntity<Response<?>> updateBundle(
+            @PathVariable String bundleId,
+            @RequestPart(name = "file") MultipartFile file,
+            @RequestBody UploadNewBundle bundle
+    ) {
+        return bundleService.updateBundle(bundleId, bundle, file);
     }
 }
