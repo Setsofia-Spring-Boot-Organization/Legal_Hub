@@ -21,6 +21,8 @@ public class BundleController {
         this.bundleUtil = bundleUtil;
     }
 
+
+
     @PostMapping(path = "/upload")
     public ResponseEntity<Response<?>> uploadBundle(
             @ModelAttribute UploadNewBundle newBundle,
@@ -29,14 +31,22 @@ public class BundleController {
         return bundleService.uploadBundle(file, newBundle);
     }
 
+
+
     @GetMapping()
     public ResponseEntity<Response<?>> getAllBundle() {
         return bundleService.getAllBundles();
     }
 
+
+    @GetMapping(path = "/{bundleId}")
+    public ResponseEntity<Response<?>> getBundle(@PathVariable String bundleId) {
+        return bundleService.getBundle(bundleId);
+    }
+
+
     @GetMapping("/viewBundle/{bundleId}")
     public ResponseEntity<?> downloadBundle(@PathVariable String bundleId) {
         return bundleUtil.downloadBundle(bundleId);
     }
-
 }
